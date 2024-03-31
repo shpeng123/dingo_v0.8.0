@@ -1,0 +1,30 @@
+{
+  "name": "test",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "primary": 0,
+      "nullable": false
+    },
+    {
+      "name": "n1",
+      "type": "varchar",
+      "precision": 64,
+      "primary": -1,
+      "nullable": false
+    },
+    {
+      "name": "n2",
+      "type": "varchar",
+      "precision": 64,
+      "primary": -1,
+      "nullable": false
+    },
+    {
+      "name": "value",
+      "type": "integer",
+      "primary": -1
+    }
+  ]
+}

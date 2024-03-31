@@ -1,0 +1,177 @@
+plugins {
+    id 'java-conventions'
+    id 'java-library'
+    id "com.gorylenko.gradle-git-properties" version "${gradleGitCommitVersion}"
+    id 'maven-publish'
+}
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+dependencies {
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: 'lombok'.v()
+    compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: 'commons-lang3'.v()
+    compileOnly group: 'javax.validation', name: 'validation-api', version: 'validation'.v()
+    compileOnly group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: 'jackson'.v()
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: 'lombok'.v()
+    annotationProcessor group: 'com.google.auto.service', name: 'auto-service', version: 'auto-service'.v()
+    compileOnly group: 'com.google.auto.service', name: 'auto-service', version: 'auto-service'.v()
+
+    api group: 'io.dingodb', name: 'dingo-sdk', version: project.version
+
+    api project(":dingo-common")
+    implementation project(":dingo-cluster-api")
+    implementation project(":dingo-store-api")
+    implementation project(":dingo-partition-api")
+    implementation project(":dingo-store-proxy")
+    implementation project(":dingo-partition-base")
+    implementation project(":dingo-exec")
+    implementation project(":dingo-net-api")
+    implementation project(":dingo-net-netty")
+    implementation project(":dingo-store-local")
+
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: 'mockito'.v()
+    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: 'slf4j'.v()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+javadoc {
+    exclude "org/apache/calcite/**"
+    source = sourceSets.main.allJava
+}
+
+task fatJar(type: Jar) {
+    // classifier 'all'
+    from(
+        configurations.runtimeClasspath
+            /*.filter {it.name.startsWith("dingo")}*/
+            .collect {it.isDirectory() ? it : zipTree(it)},
+    )
+    with jar
+
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.DSA"
+    exclude "META-INF/*.RSA"
+    exclude "*.proto"
+}
+
+fatJar.dependsOn(
+    ':dingo-common:jar',
+    ':dingo-store-api:jar',
+    ':dingo-serial:jar',
+    ':dingo-codec-api:jar',
+    ':dingo-partition-api:jar',
+    ':dingo-partition-base:jar',
+    ':dingo-meta-api:jar',
+    ':dingo-net-api:jar',
+    ':dingo-net-netty:jar',
+    ':dingo-tso-api:jar',
+    ':dingo-cluster-api:jar',
+    ':dingo-store-proxy:jar',
+    ':dingo-tool-api:jar',
+    ':dingo-exec:jar',
+    ':dingo-transaction-api:jar',
+    ':dingo-store-local:jar'
+)
+
+tasks.named("build") { x ->
+    x.finalizedBy("fatJar")
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+project.gradle.taskGraph.whenReady { graph ->
+    project.tasks.findAll().forEach { task ->
+        if (task.name.contains("signArchives")) {
+            task.enabled = false
+        }
+    }
+}
+
+
+
+publishing {
+    repositories {
+        maven {
+            name = "OSSRH"
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+
+            /**
+             * will manually release the artifactory
+             */
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl;
+
+            credentials {
+                username = System.getenv("MAVEN_USERNAME") != null ? System.getenv("MAVEN_USERNAME") : project.findProperty("ossrhUsername")
+                password = System.getenv("MAVEN_TOKEN") != null ? System.getenv("MAVEN_TOKEN") : project.findProperty("ossrhPassword")
+            }
+        }
+    }
+
+    publications {
+        maven(MavenPublication) {
+            groupId = 'io.dingodb'
+            artifactId = 'dingo-client'
+            artifacts = [ fatJar, javadocJar, sourcesJar ]
+        }
+        maven(MavenPublication) {
+            pom {
+                name = 'dingo-client'
+                packaging = 'jar'
+                // optionally artifactId can be defined here
+                description = 'DingoDB client to build connection and operation to DingoDB'
+                url = 'https://www.dingodb.com/'
+
+                scm {
+                    connection = 'scm:svn:http://foo.googlecode.com/svn/trunk/'
+                    developerConnection = 'scm:svn:https://foo.googlecode.com/svn/trunk/'
+                    url = 'http://foo.googlecode.com/svn/trunk/'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'dingodb'
+                        name = 'DingoDB develop team'
+                        email = 'dingodb@zetyun.com'
+                    }
+                }
+            }
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    if (!it.name.startsWith('dingo')) {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+            if (!version.endsWith("SNAPSHOT")) {
+                   signing {
+                           sign publishing.publications.maven
+                   }
+            }
+
+        }
+    }
+}

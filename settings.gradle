@@ -1,0 +1,71 @@
+/*
+ * Copyright 2021 DataCanvas
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+rootProject.name = 'dingo'
+
+// function String.v()
+String.metaClass.v = { ext[(delegate as String) + '.version'] }
+
+// modules
+include 'dingo-calcite'
+include 'dingo-cli'
+include 'dingo-cluster-api'
+include 'dingo-common'
+include 'dingo-driver'
+include 'dingo-driver:client'
+findProject(':dingo-driver:client')?.name = 'dingo-driver-client'
+include 'dingo-driver:host'
+findProject(':dingo-driver:host')?.name = 'dingo-driver-host'
+include 'dingo-driver:mysql-service'
+findProject(':dingo-driver:mysql-service')?.name = 'dingo-mysql-service'
+include 'dingo-driver:common'
+findProject(':dingo-driver:common')?.name = 'dingo-driver-common'
+include 'dingo-exec'
+include 'dingo-store-api'
+include 'dingo-meta-api'
+include 'dingo-net-api'
+include 'dingo-net-netty'
+include 'dingo-test'
+include 'dingo-proxy'
+include 'dingo-dist'
+include 'dingo-client'
+include 'dingo-example'
+include 'dingo-serial'
+include 'dingo-test:meta-local'
+findProject(':dingo-test:meta-local')?.name = 'dingo-meta-local'
+include 'dingo-test:store-memory'
+findProject(':dingo-test:store-memory')?.name = 'dingo-store-memory'
+include 'dingo-verify'
+include 'sqlline'
+include 'dingo-cli:sqlline'
+findProject(':dingo-cli:sqlline')?.name = 'sqlline'
+include 'dingo-cli:driver-mysql'
+findProject(':dingo-cli:driver-mysql')?.name = 'driver-mysql'
+include 'dingo-executor'
+include 'dingo-codec-api'
+include 'dingo-mysql-init'
+include 'dingo-store-proxy'
+include 'dingo-codec-serial'
+include 'dingo-scheduler-api'
+include 'dingo-partition-api'
+include 'dingo-partition-base'
+include 'dingo-tool-service'
+include 'dingo-tool-api'
+include 'dingo-web'
+include 'dingo-transaction-api'
+include 'dingo-store-local'
+include 'dingo-tso-api'
+

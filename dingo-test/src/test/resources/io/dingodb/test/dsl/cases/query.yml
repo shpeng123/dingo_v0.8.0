@@ -1,0 +1,60 @@
+---
+tables:
+  table0:
+    create: { file: tables/vs_2.create.sql }
+    init: { file: tables/vs_2.data.sql, count: 1 }
+  table1:
+    create: { file: tables/i4k_vs0_i40_f80.create.sql }
+    init: { file: tables/i4k_vs0_i40_f80.data.sql, count: 3 }
+cases:
+  - name: 'No primary key'
+    use:
+      table: table0
+    steps:
+      - sql: 'select * from {table}'
+        result:
+          - 'username, role'
+          - 'STRING, STRING'
+          - 'nacos, ROLE_ADMIN'
+  - name: 'POW(INT, INT)'
+    use:
+      table: table1
+    steps:
+      - sql: 'select pow(age, id) pai from {table}'
+        result:
+          - 'pai'
+          - 'DECIMAL'
+          - '10'
+          - '625'
+          - '17576'
+  - name: 'POW(DOUBLE, INT)'
+    use:
+      table: table1
+    steps:
+      - sql: 'select pow(amount, id) pai from {table}'
+        result:
+          - 'pai'
+          - 'DOUBLE'
+          - '2.58'
+          - '11904.9921'
+          - '27.0'
+  - name: 'MOD'
+    use:
+      table: table1
+    steps:
+      - sql: 'select mod(amount, age) from {table}'
+        result:
+          - 'EXPR$0'
+          - 'DECIMAL'
+          - '2.58'
+          - '9.11'
+          - '3.0'
+  - name: 'Concat string and non-string'
+    use:
+      table: table1
+    steps:
+      - sql: 'select name || amount || age naa from {table} where id = 3'
+        result:
+          - 'naa'
+          - 'STRING'
+          - 'Cindy3.026'

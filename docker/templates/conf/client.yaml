@@ -1,0 +1,16 @@
+cluster:
+    name: dingo
+exchange:
+    host: HOSTNAME
+    port: 8765
+client:
+    coordinatorExchangeSvrList: COORDINATORS
+security:
+    cipher:
+        keyPath: /opt/dingo/conf/dingodb.jks
+        keyPass: dingodb
+        storePass: dingodb
+        alias: dingodb
+        issuer: dingo
+    verify: true
+

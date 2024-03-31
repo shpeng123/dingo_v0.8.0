@@ -1,0 +1,30 @@
+{
+  "name": "table-with-array",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "primary": 0,
+      "nullable": false
+    },
+    {
+      "name": "set",
+      "type": "multiset",
+      "elementType": "integer",
+      "primary": -1,
+      "nullable": true
+    },
+    {
+      "name": "arr",
+      "type": "array",
+      "elementType": "integer",
+      "primary": -1,
+      "nullable": true
+    }
+  ],
+    "partition": {
+        "funcName": "RANGE",
+        "details": [
+        ]
+    }
+}

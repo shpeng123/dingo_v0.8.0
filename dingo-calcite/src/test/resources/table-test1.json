@@ -1,0 +1,42 @@
+{
+  "name": "test1",
+  "columns": [
+    {
+      "name": "id0",
+      "type": "integer",
+      "primary": 0,
+      "nullable": false
+    },
+    {
+      "name": "id1",
+      "type": "varchar",
+      "primary": 1,
+      "nullable": false
+    },
+    {
+      "name": "id2",
+      "type": "boolean",
+      "primary": 2,
+      "nullable": false
+    },
+    {
+      "name": "name",
+      "type": "varchar",
+      "precision": 64,
+      "primary": -1,
+      "default": "Peso",
+      "nullable": false
+    },
+    {
+      "name": "amount",
+      "type": "double",
+      "primary": -1,
+      "nullable": true
+    }
+  ],
+    "partition": {
+        "funcName": "RANGE",
+        "details": [
+        ]
+    }
+}

@@ -1,0 +1,2 @@
+io.dingodb.verify.auth.IdentityAuthService$IdentityAuthServiceProvider
+io.dingodb.verify.auth.TokenAuthService$TokenAuthServiceProvider

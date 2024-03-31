@@ -1,0 +1,80 @@
+/*
+ * Copyright 2021 DataCanvas
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id 'java-conventions'
+    id 'application'
+}
+
+application {
+    mainClass = 'io.dingodb.test.driver.server.DingoDriverTestServer'
+}
+
+sourceSets {
+    // `it` is a keyword of Groovy.
+    intTest {
+        compileClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.test.output
+    }
+}
+
+configurations {
+    intTestImplementation.extendsFrom implementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+
+dependencies {
+    annotationProcessor group: 'com.google.auto.service', name: 'auto-service', version: 'auto-service'.v()
+    compileOnly group: 'com.google.auto.service', name: 'auto-service', version: 'auto-service'.v()
+    implementation 'org.assertj:assertj-core:' + 'assertj'.v()
+    implementation 'org.junit.jupiter:junit-jupiter-api:' + 'junit5'.v()
+    implementation 'org.junit.jupiter:junit-jupiter-params:' + 'junit5'.v()
+    implementation group: 'commons-io', name: 'commons-io', version: 'commons-io'.v()
+    implementation group: 'org.apache.calcite.avatica', name: 'avatica-server', version: 'avatica'.v()
+    implementation project(':dingo-calcite')
+    implementation project(':dingo-driver:dingo-driver-client')
+    implementation project(':dingo-driver:dingo-driver-host')
+    implementation project(':dingo-exec')
+    implementation project(':dingo-net-netty')
+    implementation project(':dingo-test:dingo-meta-local')
+    implementation project(':dingo-test:dingo-store-memory')
+    implementation project(':dingo-verify')
+    implementation project(':dingo-partition-api')
+    implementation project(':dingo-partition-base')
+    implementation project(':dingo-transaction-api')
+    intTestAnnotationProcessor 'org.projectlombok:lombok:' + 'lombok'.v()
+    intTestCompileOnly 'org.projectlombok:lombok:' + 'lombok'.v()
+    intTestImplementation group: 'org.apache.commons', name: 'commons-lang3', version: 'commons-lang3'.v()
+    intTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + 'junit5'.v()
+    intTestRuntimeOnly group: 'mysql', name: 'mysql-connector-java', version: '8.0.33'
+    intTestRuntimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: 'logback'.v()
+    intTestRuntimeOnly group: 'ch.qos.logback', name: 'logback-core', version: 'logback'.v()
+    testImplementation project(':dingo-calcite')
+    testRuntimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: 'logback'.v()
+    testRuntimeOnly group: 'ch.qos.logback', name: 'logback-core', version: 'logback'.v()
+}
+
+tasks.register('intTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    useJUnitPlatform()
+    shouldRunAfter test
+}

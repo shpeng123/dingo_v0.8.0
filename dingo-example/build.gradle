@@ -1,0 +1,44 @@
+
+plugins {
+    id 'java-conventions'
+    id 'java-library'
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+}
+
+dependencies {
+    implementation group: 'com.beust', name: 'jcommander', version: 'jcommander'.v()
+    implementation project(':dingo-driver:dingo-driver-client')
+    implementation project(':dingo-client')
+    implementation project(':dingo-common')
+    implementation group: 'io.dingodb', name: 'dingo-sdk', version: project.version
+    runtimeOnly group: 'ch.qos.logback', name: 'logback-core', version: 'logback'.v()
+    runtimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: 'logback'.v()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task fatJar(type: Jar) {
+    classifier 'all'
+    from(
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) },
+    )
+    with jar
+
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.DSA"
+    exclude "META-INF/*.RSA"
+
+    zip64 true
+}
+
+fatJar.dependsOn([
+    ':dingo-common:jar',
+    ':dingo-driver:dingo-driver-client:fatJar',
+    ':dingo-client:fatJar',
+])
+
+tasks.named("build") { x ->
+    x.finalizedBy("fatJar")
+}

@@ -1,0 +1,26 @@
+cluster:
+    name: dingo
+exchange:
+    host: 192.168.80.129
+    port: 8765
+server:
+    coordinators: 192.168.80.129:22001,192.168.80.129:22002,192.168.80.129:22003
+    user: user
+    keyring: keyring
+    resourceTag: 1
+    mysqlPort: 3307
+variable:
+    autoIncrementCacheCount: 10000
+    autoIncrementIncrement: 1
+    autoIncrementOffset: 1
+store:
+  bufferSize: 67108864
+  bufferNumber: 2
+  fileSize: 67108864
+security:
+    cipher:
+        keyPath: /opt/dingo/conf/dingodb.jks
+        keyPass: dingodb
+        storePass: dingodb
+        alias: dingodb
+        issuer: dingo

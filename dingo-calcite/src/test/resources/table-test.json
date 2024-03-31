@@ -1,0 +1,30 @@
+{
+  "name": "test",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "primary": 0,
+      "nullable": false
+    },
+    {
+      "name": "name",
+      "type": "varchar",
+      "precision": 64,
+      "primary": -1,
+      "default": "'Peso'",
+      "nullable": false
+    },
+    {
+      "name": "amount",
+      "type": "double",
+      "primary": -1,
+      "nullable": true
+    }
+  ],
+    "partition": {
+        "funcName": "RANGE",
+        "details": [
+        ]
+    }
+}

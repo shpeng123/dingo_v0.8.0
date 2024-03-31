@@ -1,0 +1,42 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.15'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "com.gorylenko.gradle-git-properties" version "${gradleGitCommitVersion}"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.dingodb.web.DingoWebApplication'
+    }
+}
+
+dependencies {
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: 'slf4j'.v()
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: 'logback'.v()
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: 'logback'.v()
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+    implementation group: 'org.mapstruct', name: 'mapstruct', version: 'mapstruct'.v()
+
+    implementation group: 'net.sf.ehcache', name: 'ehcache', version: 'ehcache'.v()
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: 'springcache'.v()
+
+    implementation project(":dingo-common")
+    implementation project(":dingo-verify")
+
+    implementation group: 'io.dingodb', name: 'dingo-sdk', version: project.version
+    implementation group: 'org.yaml', name: 'snakeyaml', version: 'snakeyaml'.v()
+
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: 'lombok'.v()
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: 'lombok'.v()
+    annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: 'mapstruct'.v()
+}
+
+test {
+    useJUnitPlatform()
+}

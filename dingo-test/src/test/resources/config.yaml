@@ -1,0 +1,9 @@
+cluster:
+  name: dingo
+exchange:
+  host: localhost
+  port: 12000
+client:
+  coordinatorExchangeSvrList: localhost:19181
+security:
+  verify: false
